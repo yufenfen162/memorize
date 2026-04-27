@@ -9,6 +9,7 @@ import Foundation
 
 struct MemoryGame<CardContent> where CardContent: Equatable{
     var cards:[Card]
+    var score: Int = 0
     
     init(numberOfPairsOfCards :Int,
         createCardContent: (Int) -> CardContent){
@@ -24,19 +25,27 @@ struct MemoryGame<CardContent> where CardContent: Equatable{
     var lastFaceUpIndex:Int?
     mutating func choose(_ card:Card){
         if let chosenIndex = index(of: card){
-            if let lastIndex = lastFaceUpIndex{
-                if cards[lastIndex].content == cards[chosenIndex].content{
-                    cards[lastIndex].isMatched = true
-                    cards[chosenIndex].isMatched = true
+            if !cards[chosenIndex].isFaceUp && !cards[chosenIndex].isMatched{
+                if let lastIndex = lastFaceUpIndex{
+                    if cards[lastIndex].content == cards[chosenIndex].content{
+                        cards[lastIndex].isMatched = true
+                        cards[chosenIndex].isMatched = true
+                        score += 2
+                    }else{
+                        if cards[chosenIndex].hasBeenSeen{score -= 1}
+                        if cards[lastIndex].hasBeenSeen{score -= 1}
+                    }
+                    cards[lastIndex].hasBeenSeen = true
+                    cards[chosenIndex].hasBeenSeen = true
+                    lastFaceUpIndex = nil
+                }else{
+                    for i in 0..<cards.count{
+                        cards[i].isFaceUp = false
+                    }
+                    lastFaceUpIndex = chosenIndex
                 }
-                lastFaceUpIndex = nil
-            }else{
-                for i in 0..<cards.count{
-                    cards[i].isFaceUp = false
-                }
-                lastFaceUpIndex = chosenIndex
+                cards[chosenIndex].isFaceUp.toggle()
             }
-            cards[chosenIndex].isFaceUp.toggle()
         }
         print("cards:\(cards)")
     }
@@ -62,6 +71,7 @@ struct MemoryGame<CardContent> where CardContent: Equatable{
         
         var isFaceUp: Bool = false
         var isMatched: Bool = false
+        var hasBeenSeen: Bool = false
         var content: CardContent
         
         var id: String

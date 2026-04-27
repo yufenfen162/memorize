@@ -12,16 +12,35 @@ struct ContentView: View {
     
     var body: some View {
         VStack{
-
+            Text(viewModel.themeName)
+                .font(.largeTitle)
+                .fontWeight(.heavy)
+            
             cardList
                 .animation(.default, value: viewModel.cards)
             Spacer()
-            Button("Shuffle"){
-                viewModel.shuffle()
+            HStack{
+                Text("Score: \(viewModel.score)")
+                    .font(.largeTitle)
+                    .foregroundStyle(.orange)
+                
+                Spacer()
+                
+                Button(action:{
+                    viewModel.newGame()
+                }, label: {
+                    VStack{
+                        Image(systemName: "plus.circle")
+                            .font(.title)
+                        Text("New Game")
+                            .font(.caption)
+                    }
+                })
+                .padding(.horizontal)
             }
+            .padding()
+            .foregroundStyle(viewModel.themeColor)
         }
-        .padding()
-        .foregroundStyle(.orange)
     }
     
     var cardList: some View{
